@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlDocument">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title data-bind="text: title"></title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" integrity="sha512-GQGU0fMMi238uA+a/bdWJfpUGKUkBdgfFdgBm72SUQ6BeyWjoY/ton0tEjH+OSH9iP4Dfh+7HM0I9f5eR0L/4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/github.min.css" integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/diff2html@3.4.16/bundles/css/diff2html.min.css" integrity="sha256-YOtpZbfySqQYMH+ylml1eZPChG41gl4WC6LrUOyLRZ8=" crossorigin="anonymous">
+    </head>
+    <body>
+
+        <div class="container" id="loadingContainer" data-bind="css: { 'invisible visually-hidden': !isLoading() }">
+            <div class="row">
+                <div class="py-4">
+                    <h1 class="text-center">
+                        <i class="fa-solid fa-spinner fa-spin-pulse"></i>
+                        Loading Test Content
+                    </h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="container visually-hidden" id="mainContainer" data-bind="css: { 'visually-hidden': isLoading }">
+            <div class="row">
+                <div class="py-4">
+                    <h1 class="text-center" data-bind="text: title"></h1>
+                    <p class="text-muted text-center" data-bind="text: description"></p>
+                </div>
+
+                <div class="mb-3 row">
+                    <label for="localJsonFile" class="col-auto col-form-label">Local JSON File</label>
+                    <div class="col">
+                        <input class="form-control" type="file" id="localJsonFile" accept=".json"
+                            data-bind="event: { change: function(data, event) { loadLocalJson(event); } }" />
+                    </div>
+                </div>
+
+                <p class="fw-bolder">Total Test Status:</p>
+                <dl data-bind="let: status()" class="dl-horizontal row">
+                    <dt class="col-auto">Total</dt>
+                    <dd class="col-auto" data-bind="text: total"></dd>
+                    <dt class="col-auto">Success</dt>
+                    <dd class="col-auto" data-bind="text: success"></dd>
+                    <dt class="col-auto">Failed / Unexpected</dt>
+                    <dd class="col-auto" data-bind="text: failed"></dd>
+                </dl>
+            </div>
+
+            <div class="row">
+                <div class="col-auto form-check form-switch" data-bind="css: { 'visually-hidden': status().success() === 0 }">
+                    <input class="form-check-input" type="checkbox" id="showSuccessful" data-bind="checked: showSuccessful" />
+                    <label class="form-check-label" for="showSuccesful">Show Successful tests</label>
+                </div>
+                <div class="col-auto form-check form-switch" data-bind="css: { 'visually-hidden': status().failed() === 0 }">
+                    <input class="form-check-input" type="checkbox" id="showFailed" data-bind="checked: showFailed" />
+                    <label class="form-check-label" for="showFailed">Show Failed tests</label>
+                </div>
+                <div class="col-auto form-check form-switch" data-bind="css: { 'visually-hidden': notes().length === 0 }">
+                    <input class="form-check-input" type="checkbox" id="showNotes" data-bind="checked: showNotes" />
+                    <label class="form-check-label" for="showNotes">Show Notes</label>
+                </div>
+            </div>
+
+            <div class="row fade show" data-bind="css: { 'show': showNotes() }">
+                <ul class="list-group"
+                    data-bind="
+                        visible: showNotes(),
+                        foreach: { data: notes, as: 'note' }">
+                        <!-- ko component: {
+                            name: 'markdownNoteItem',
+                            params: { text: note }
+                        }-->
+                        <!-- /ko -->
+                </ul>
+            </div>
+
+            <div class="accordion row" data-bind="foreach: filteredTests" id="testsAccordion">
+
+                <div class="accordion-item px-0 mx-0">
+                    <h2 class="accordion-header" data-bind="attr: { id: 'tests-' + $index() + '-header' }">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bind="attr: { 'data-bs-target': '#tests-' + $index() + '-content' }">
+                            <i class="fa-solid fa-check text-success" data-bind="visible: success"></i>
+                            <i class="fa-solid fa-xmark text-danger" data-bind="hidden: success"></i>
+                            <span data-bind="text: name" class="ps-2 pe-3"></span>
+                            <code class="small text-muted" data-bind="text: command"></code>
+                        </button>
+                    </h2>
+                    <div data-bind="attr: { id: 'tests-' + $index() + '-content' }" data-bs-parent="#testsAccordion" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="text-muted col-auto me-auto" data-bind="if: command">
+                                    Command:
+                                    <kbd data-bind="text: command"></kbd>
+                                </div>
+
+                                <div class="col-auto" data-bind="if: logs().length > 1">
+                                    <button type="button" class="btn btn-sm btn-secondary" data-bind="click: $root.openDiffDialog" data-bs-toggle="modal" data-bs-target="#diffDialog">
+                                        Show Diff
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- ko component: {
+                                name: 'markdownItem',
+                                params: { text: details() }
+                            }-->
+                            <!-- /ko -->
+
+                            <ul class="nav nav-tabs" data-bind="foreach: logs">
+                                <li class="nav-item">
+                                    <button class="nav-link" data-bs-toggle="tab" type="button"
+                                        data-bind="
+                                            attr: { 
+                                                id: 'test-' + $parentContext.$index() + '-log-' + $index() + '-tab',
+                                                'data-bs-target': '#tests-' + $parentContext.$index() + '-log-' + $index() + '-content'
+                                            },
+                                            css: { 'active': $index() == 0 }">
+                                        <i class="fa-solid fa-terminal" data-bind="if: type() === 'command'"></i>
+                                        <i class="fa-solid fa-check text-success" data-bind="visible: success"></i>
+                                        <i class="fa-solid fa-xmark text-danger" data-bind="hidden: success"></i>
+                                        <span data-bind="text: title"></span>
+                                    </button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" data-bind="foreach: logs">
+                                <div class="tab-pane fade border border-1 border-top-0 rounded px-3 py-2" role="tabpanel" data-bind="
+                                    attr: { id: 'tests-' + $parentContext.$index() + '-log-' + $index() + '-content' },
+                                    css: { 'active': $index() == 0, 'show': $index() == 0 }">
+                                    <p class="text-muted text-center" data-bind="if: type() === 'command' && context() !== $parent.command()">
+                                        Command:
+                                        <kbd data-bind="text: context"></kbd>
+                                    </p>
+                                    <p class="text-muted text-center" data-bind="if: type() === 'odata'">
+                                        Feed:
+                                        <code data-bind="text: context"></code>
+                                    </p>
+                                    <!-- ko if: description() && description() !== $parent.details() -->
+                                        <div class="text-center border-bottom" data-bind="component: {
+                                            name: 'markdownItem',
+                                            params: { text: description() }
+                                        }"></div>
+                                    <!-- /ko -->
+
+                                    <div class="pt-1" data-bind="component: {
+                                        name: 'highlightItem',
+                                        params: { text: content(), language: language() },
+                                    }"></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+    
+            </div>
+
+        </div>
+
+        <div class="modal fade" tabindex="-1" id="diffDialog" aria-labelledby="diffDialogLabel" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen">
+                <div class="modal-content" data-bind="using: selectedTest">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="diffDialogLabel" data-bind="text: title"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="col-12 fw-bold">
+                                    Left Diff
+                                </div>
+                                <div data-bind="foreach: leftLogs">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" data-bind="attr: { id: 'left-' + $index() + '-log' }, checkedValue: $data, checked: $parent.left" />
+                                        <label class="form-check-label" data-bind="attr: { for: 'left-' + $index() + '-log' }, text: title"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="col-12 fw-bold">
+                                    Right Diff
+                                </div>
+                                <div data-bind="foreach: rightLogs">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" data-bind="attr: { id: 'right-' + $index() + '-log' }, checkedValue: $data, checked: $parent.right" />
+                                        <label class="form-check-label" data-bind="attr: { for: 'right-' + $index() + '-log' }, text: title"></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12" data-bind="html: diff"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/diff2html@3.4.16/bundles/js/diff2html.min.js" integrity="sha256-+Sr/gaeeBR7XQYX4/ZWTNJlK7XS9O+8m9THnsnfuDl4=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js" integrity="sha512-pax4MlgXjHEPfCwcJLQhigY7+N8rt6bVvWLFyUMuxShv170X53TRzGPmPkZmGBhk+jikR8WBM4yl7A9WMHHqvg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        {{SCRIPT_REFERENCE}}
+    </body>
+</html>
