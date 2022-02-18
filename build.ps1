@@ -1,12 +1,17 @@
-param([switch]$Release)
+param(
+    [switch]$Release
+)
 
 $distDir = "$PSScriptRoot\dist"
 $srcDir = "$PSScriptRoot\src"
 
 yarn install
 
+"Removing existing distribution files"
+
 if ($Release) {
-    yarn tsc --removeComments --stripInternal --noEmitOnError --declaration
+    Remove-Item "$distDir\*" -Recurse
+    yarn tsc --removeComments --stripInternal --noEmitOnError
     yarn uglifyjs "$distDir\template.js" --compress --mangle -o "$distDir\template.min.js"
     $sha = Get-FileHash -Algorithm SHA256 -Path "$distDir\template.min.js" | % Hash
     $scriptRef = "<script src=`"template.min.js?sha=$sha`"></script>"
