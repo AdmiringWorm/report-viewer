@@ -15,6 +15,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build
         run: ./build.ps1
+        shell: pwsh
       - name: Deploy
         if: success()
         uses: crazy-max/ghaction-github-pages@v2.6.0
