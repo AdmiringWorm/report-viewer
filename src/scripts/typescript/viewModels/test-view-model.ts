@@ -1,4 +1,5 @@
 import { observable, Observable, observableArray, ObservableArray } from "knockout";
+import { StatusType } from "../status-type";
 import { ILogModel, LogViewModel } from "./log-viewmodel";
 
 export interface ITestDataModel {
@@ -6,6 +7,7 @@ export interface ITestDataModel {
     details?: string;
     command?: string;
     success?: boolean;
+    status?: StatusType;
     logs: ILogModel[];
 }
 
@@ -13,24 +15,38 @@ export class TestViewModel {
     public name: Observable<string>;
     public command: Observable<string>;
     public details: Observable<string>;
-    public success: Observable<boolean>;
+    public status: Observable<StatusType>;
     public logs: ObservableArray<LogViewModel>;
 
     constructor(data?: ITestDataModel) {
         this.name = observable(data?.name ?? "");
         this.command = observable(data?.command ?? "");
         this.details = observable(data?.details ?? "");
-        this.success = observable(data?.success ?? true);
+        if (data?.status === undefined) {
+            const success = data?.success ?? true;
+            this.status = observable<StatusType>(success ? StatusType.Success : StatusType.Failed);
+        } else {
+            this.status = observable(data?.status ?? StatusType.Success);
+        }
 
         this.logs = observableArray<LogViewModel>([]);
 
         if (data?.logs) {
             for (const log of data.logs) {
-                if (!log.success && this.success()) {
-                    this.success(false);
+                if (log.status === undefined) {
+                    if (!log.success && this.status() === StatusType.Success) {
+                        this.status(StatusType.Failed);
+                    }
+                } else {
+                    if ((log.status === StatusType.Inconclusive || log.status === StatusType.NotRun) && this.status() === StatusType.Success) {
+                        this.status(StatusType.Inconclusive);
+                    }
+                    else if (log.status === StatusType.Failed && this.status() !== StatusType.Failed) {
+                        this.status(log.status);
+                    }
                 }
 
-                const vm = new LogViewModel(log, this.success());
+                const vm = new LogViewModel(log);
                 this.logs.push(vm);
             }
         }
