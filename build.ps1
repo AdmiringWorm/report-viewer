@@ -8,11 +8,12 @@ yarn install
 if ($Release) {
     yarn tsc --removeComments --stripInternal --noEmitOnError --declaration
     yarn uglifyjs "$distDir\template.js" --compress --mangle -o "$distDir\template.min.js"
-    $scriptContent = Get-Content -Raw -Encoding utf8 "$distDir\template.min.js"
-    $scriptRef = "<script defer>$scriptContent</script>"
+    $sha = Get-FileHash -Algorithm SHA256 -Path "$distDir\template.min.js" | % Hash
+    $scriptRef = "<script src=`"template.min.js?sha=$sha`"></script>"
 } else {
     yarn tsc --incremental --sourceMap
-    $scriptRef = "<script src=`"template.js`"></script>"
+    $sha = Get-FileHash -Algorithm SHA256 -Path "$distDir\template.js" | % Hash
+    $scriptRef = "<script src=`"template.js?sha=$sha`"></script>"
 }
 $htmlContent = Get-Content -Encoding utf8 "$srcDir\index.html" | % {
     $_ -replace "{{SCRIPT_REFERENCE}}", $scriptRef
