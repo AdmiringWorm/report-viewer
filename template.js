@@ -36,7 +36,7 @@ define("viewModels/log-viewmodel", ["require", "exports", "knockout"], function 
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.LogViewModel = void 0;
     class LogViewModel {
-        constructor(data, globalStatus = 0 /* Success */) {
+        constructor(data, globalStatus = 0) {
             var _a, _b, _c, _d, _e, _f, _g, _h;
             this.language = (0, knockout_1.pureComputed)(() => {
                 var _a;
@@ -57,8 +57,8 @@ define("viewModels/log-viewmodel", ["require", "exports", "knockout"], function 
             this.content = (0, knockout_1.observable)((_d = data === null || data === void 0 ? void 0 : data.content) !== null && _d !== void 0 ? _d : "No Content");
             this.type = (0, knockout_1.observable)((_f = (_e = data === null || data === void 0 ? void 0 : data.type) === null || _e === void 0 ? void 0 : _e.toLowerCase()) !== null && _f !== void 0 ? _f : 'other');
             if ((data === null || data === void 0 ? void 0 : data.status) === undefined) {
-                const success = (_g = data === null || data === void 0 ? void 0 : data.success) !== null && _g !== void 0 ? _g : globalStatus == 0 /* Success */;
-                this.status = (0, knockout_1.observable)(success ? 0 /* Success */ : 1 /* Failed */);
+                const success = (_g = data === null || data === void 0 ? void 0 : data.success) !== null && _g !== void 0 ? _g : globalStatus == 0;
+                this.status = (0, knockout_1.observable)(success ? 0 : 1);
             }
             else {
                 this.status = (0, knockout_1.observable)((_h = data === null || data === void 0 ? void 0 : data.status) !== null && _h !== void 0 ? _h : globalStatus);
@@ -134,24 +134,24 @@ define("viewModels/test-view-model", ["require", "exports", "knockout", "viewMod
             this.details = (0, knockout_4.observable)((_c = data === null || data === void 0 ? void 0 : data.details) !== null && _c !== void 0 ? _c : "");
             if ((data === null || data === void 0 ? void 0 : data.status) === undefined) {
                 const success = (_d = data === null || data === void 0 ? void 0 : data.success) !== null && _d !== void 0 ? _d : true;
-                this.status = (0, knockout_4.observable)(success ? 0 /* Success */ : 1 /* Failed */);
+                this.status = (0, knockout_4.observable)(success ? 0 : 1);
             }
             else {
-                this.status = (0, knockout_4.observable)((_e = data === null || data === void 0 ? void 0 : data.status) !== null && _e !== void 0 ? _e : 0 /* Success */);
+                this.status = (0, knockout_4.observable)((_e = data === null || data === void 0 ? void 0 : data.status) !== null && _e !== void 0 ? _e : 0);
             }
             this.logs = (0, knockout_4.observableArray)([]);
             if (data === null || data === void 0 ? void 0 : data.logs) {
                 for (const log of data.logs) {
                     if (log.status === undefined) {
-                        if (!log.success && this.status() === 0 /* Success */) {
-                            this.status(1 /* Failed */);
+                        if (!log.success && this.status() === 0) {
+                            this.status(1);
                         }
                     }
                     else {
-                        if ((log.status === 2 /* Inconclusive */ || log.status === 3 /* NotRun */) && this.status() === 0 /* Success */) {
-                            this.status(2 /* Inconclusive */);
+                        if ((log.status === 2 || log.status === 3) && this.status() === 0) {
+                            this.status(2);
                         }
-                        else if (log.status === 1 /* Failed */ && this.status() !== 1 /* Failed */) {
+                        else if (log.status === 1 && this.status() !== 1) {
                             this.status(log.status);
                         }
                     }
@@ -183,9 +183,9 @@ define("viewModels/main-viewmodel", ["require", "exports", "knockout", "viewMode
             };
             this.filteredTests = (0, knockout_5.computed)(() => {
                 return knockout_5.utils.arrayFilter(this.tests(), (test) => {
-                    return (this.showSuccessful() && test.status() === 0 /* Success */)
-                        || (this.showFailed() && test.status() === 1 /* Failed */)
-                        || test.status() === 2 /* Inconclusive */ || test.status() === 3 /* NotRun */;
+                    return (this.showSuccessful() && test.status() === 0)
+                        || (this.showFailed() && test.status() === 1)
+                        || test.status() === 2 || test.status() === 3;
                 });
             }, this);
             this.notes = (0, knockout_5.observableArray)([]);
@@ -244,10 +244,10 @@ define("viewModels/main-viewmodel", ["require", "exports", "knockout", "viewMode
                     status.total(status.total() + 1);
                     var testVM = new test_view_model_1.TestViewModel(test);
                     this.tests.push(testVM);
-                    if (testVM.status() === 0 /* Success */) {
+                    if (testVM.status() === 0) {
                         status.success(status.success() + 1);
                     }
-                    else if (testVM.status() === 1 /* Failed */) {
+                    else if (testVM.status() === 1) {
                         status.failed(status.failed() + 1);
                     }
                 }
@@ -360,12 +360,11 @@ define("components/status-icon", ["require", "exports", "knockout"], function (r
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.StatusIcon = void 0;
-    //import { StatusType } from "../status-type";
     class StatusIcon {
         constructor(params) {
-            this.status = (0, knockout_9.observable)(0 /* Success */);
+            this.status = (0, knockout_9.observable)(0);
             if (params.status === undefined) {
-                this.status(params.success ? 0 /* Success */ : 1 /* Failed */);
+                this.status(params.success ? 0 : 1);
             }
             else {
                 this.status(params.status);
@@ -391,4 +390,3 @@ define("knockout-configure", ["require", "exports", "components/highlight", "com
     highlight_1.HighlightComponent.register();
     status_icon_1.StatusIcon.register();
 });
-//# sourceMappingURL=template.js.map
