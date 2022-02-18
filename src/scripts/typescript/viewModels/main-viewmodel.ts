@@ -1,4 +1,5 @@
 import {computed, observable, observableArray, utils} from "knockout";
+import { StatusType } from "../status-type";
 import { DialogViewModel } from "./dialog-viewmodel";
 import { StatusViewModel } from "./status-viewmodel";
 import { ITestDataModel, TestViewModel } from "./test-view-model";
@@ -33,8 +34,9 @@ export default class MainViewModel {
 
     public filteredTests = computed<TestViewModel[]>(() => {
         return utils.arrayFilter(this.tests(), (test) => {
-            return (this.showSuccessful() && test.success())
-                || (this.showFailed() && !test.success());
+            return (this.showSuccessful() && test.status() === StatusType.Success)
+                || (this.showFailed() && test.status() === StatusType.Failed)
+                || test.status() === StatusType.Inconclusive || test.status() === StatusType.NotRun;
         });
     }, this);
 
@@ -101,9 +103,9 @@ export default class MainViewModel {
                 var testVM = new TestViewModel(test);
                 this.tests.push(testVM);
 
-                if (testVM.success()) {
+                if (testVM.status() === StatusType.Success) {
                     status.success(status.success() + 1);
-                } else {
+                } else if (testVM.status() === StatusType.Failed) {
                     status.failed(status.failed() + 1);
                 }
             }
