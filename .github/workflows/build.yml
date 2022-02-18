@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build
-        run: .\build.ps1
+        run: ./build.ps1
       - name: Deploy
         if: success()
         uses: crazy-max/ghaction-github-pages@v2.6.0
