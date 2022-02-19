@@ -15,6 +15,7 @@ class TestScenario {
         # Set name for TestScenario
         $this.Title = $NewTitle
         $this.Notes = [System.Collections.Generic.List[string]]::new()
+        $this.Tests = [System.Collections.Generic.List[TestCase]]::new()
     }
 
     [void]Save([string]$Path, [bool]$writeIndented = $false) {

@@ -7,6 +7,6 @@
         [string] $Details
     )
 
-    $Global:CurrentTestCase = New-TestCase $PSBoundParameters
+    $Global:CurrentTestCase = New-TestCase @PSBoundParameters
     $Global:CurrentTestCase
 }

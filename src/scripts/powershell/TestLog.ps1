@@ -3,7 +3,7 @@ class TestLog {
     [String] $Title
     [String] $Type
     [String] $Context
-    [bool] $Success
+    [StatusType] $Status
     [string] $Details
     [string] $Content
 
@@ -14,5 +14,6 @@ class TestLog {
     TestLog([String] $NewTitle) {
         # Set name for TestLog
         $this.Title = $NewTitle
+        $this.Status = 'Success'
     }
 }

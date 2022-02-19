@@ -9,7 +9,7 @@ function New-TestLog {
         [string] $Context,
         [string] $Details,
         [string] $Content,
-        [switch] $Success
+        [StatusType] $Status = 'Success'
     )
 
     if (!$Global:testScenario) {
@@ -26,9 +26,7 @@ function New-TestLog {
     $newLog = [TestLog]::new($Title)
     $newLog.Type = $Type
     $newLog.Context = $Context
-    if ($Success) {
-        $newLog.Success = $Success
-    }
+    $newLog.Status = $Status
     $newLog.Details = $Details
     $newLog.Content = $Content
     $testCase.Logs.Add($newLog) | Out-Null
