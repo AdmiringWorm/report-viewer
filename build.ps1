@@ -5,6 +5,18 @@ param(
 $distDir = "$PSScriptRoot/dist"
 $srcDir = "$PSScriptRoot/src"
 
+$encoding = if ($IsCoreCLR) {
+    'utf8NoBOM'
+} else {
+    'utf8'
+}
+
+$encodingBom = if ($IsCoreCLR) {
+    'utf8BOM'
+} else {
+    'utf8'
+}
+
 yarn install
 
 if ($Release) {
@@ -25,7 +37,7 @@ $htmlContent = Get-Content -Encoding utf8 "$srcDir/index.html" | % {
     $_ -replace "{{SCRIPT_REFERENCE}}", $scriptRef
 }
 
-$htmlContent | Out-File -Encoding utf8 "$distDir/index.html"
+$htmlContent | Out-File -Encoding $encoding "$distDir/index.html"
 
 $scripts = Get-ChildItem src -Filter "*.ps1" -Recurse
 
@@ -34,4 +46,4 @@ $newScriptContent = $scripts | % {
     ""
 }
 
-$newScriptContent | Out-File "$distDir/helpers.ps1"
+$newScriptContent | Out-File -Encoding $encodingBom "$distDir/helpers.ps1"
