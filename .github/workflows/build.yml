@@ -18,7 +18,7 @@ jobs:
         shell: pwsh
       - name: Deploy
         if: success()
-        uses: crazy-max/ghaction-github-pages@v2.6.0
+        uses: crazy-max/ghaction-github-pages@v2.7.0
         with:
           target_branch: gh-pages
           build_dir: dist
