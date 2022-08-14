@@ -65,30 +65,30 @@ abbrev@1:
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
   integrity sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==
 
-diff2html@3.4.16:
-  version "3.4.16"
-  resolved "https://registry.yarnpkg.com/diff2html/-/diff2html-3.4.16.tgz#3d27e88594fa0e1ab954cc11e90895f9fa7b002d"
-  integrity sha512-KfkvEoZTJertjoGPYFLn8n0yRdvzJcHvFJpJwbIxUlHU9x6qqhRZEM+TlgtU09jdLqRZAQyWFoxPiP6HeT2IYA==
+diff2html@3.4.18:
+  version "3.4.18"
+  resolved "https://registry.yarnpkg.com/diff2html/-/diff2html-3.4.18.tgz#1f68caf8d55ade5c0e6fdcf0def5f182b1d1dd52"
+  integrity sha512-eZP1vKjCNMPFpCoY0+ATZYTgdUUriUTLxRLjjAx6qPje7orIirtTkW3ghVcz3dIBjcum47AGIHBHpLhdrdS7aw==
   dependencies:
-    diff "5.0.0"
+    diff "5.1.0"
     hogan.js "3.0.2"
   optionalDependencies:
-    highlight.js "11.2.0"
+    highlight.js "11.6.0"
 
-diff@5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/diff/-/diff-5.0.0.tgz#7ed6ad76d859d030787ec35855f5b1daf31d852b"
-  integrity sha512-/VTCrvm5Z0JGty/BWHljh+BAiw3IK+2j87NGMu8Nwc/f48WoDAC395uomO9ZD117ZOBaHmkX1oyLvkVM/aIT3w==
-
-highlight.js@11.2.0:
-  version "11.2.0"
-  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-11.2.0.tgz#a7e3b8c1fdc4f0538b93b2dc2ddd53a40c6ab0f0"
-  integrity sha512-JOySjtOEcyG8s4MLR2MNbLUyaXqUunmSnL2kdV/KuGJOmHZuAR5xC54Ko7goAXBWNhf09Vy3B+U7vR62UZ/0iw==
+diff@5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/diff/-/diff-5.1.0.tgz#bc52d298c5ea8df9194800224445ed43ffc87e40"
+  integrity sha512-D+mk+qE8VC/PAUrlAU34N+VfXev0ghe5ywmpqrawphmVZc1bEfn56uo9qpyGp1p4xpzOHkSW4ztBd6L7Xx4ACw==
 
 highlight.js@11.5.1:
   version "11.5.1"
   resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-11.5.1.tgz#027c24e4509e2f4dcd00b4a6dda542ce0a1f7aea"
   integrity sha512-LKzHqnxr4CrD2YsNoIf/o5nJ09j4yi/GcH5BnYz9UnVpZdS4ucMgvP61TDty5xJcFGRjnH4DpujkS9bHT3hq0Q==
+
+highlight.js@11.6.0:
+  version "11.6.0"
+  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-11.6.0.tgz#a50e9da05763f1bb0c1322c8f4f755242cff3f5a"
+  integrity sha512-ig1eqDzJaB0pqEvlPVIpSSyMaO92bH1N2rJpLMN/nX396wTpDA4Eq0uK+7I/2XG17pFaaKE0kjV/XPeGt7Evjw==
 
 hogan.js@3.0.2:
   version "3.0.2"
